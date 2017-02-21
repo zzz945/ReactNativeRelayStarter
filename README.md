@@ -1,37 +1,27 @@
 # React Native / Relay TodoMVC
 
-## Installation
+## Installation (Make sure MongoDB is installed: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
 
 ```
 npm install -g react-native-cli && npm install
 ```
 
-## Running(Make sure mongodb is running)
+## Running
 
 ### Start the GraphQL server:
 
 ```
-npm start
+mongod  # run MongoDB local
+npm start   # run GraphQL server local
 ```
 
-### Ensure you can connect to the development server:
+## Test the server
 
-#### iOS
+```
+open http://localhost:8080 to test MongoDB and GraphQL server
+```
 
-Ensure that you are on the same WiFi network as your computer. If you're using a
-cell data plan, your phone can't access your computer's local IP address.
-
-#### Android
-
-You need to run `adb reverse tcp:8080 tcp:8080` to forward requests from the
-device to your computer. This works only on Android 5.0 and newer.
-
-#### If all else fails
-
-Open `app.js` and change `localhost:8080` to an IP/port that your device can
-access.
-
-### Run on your device of choice:
+### Run on simulator:
 
 ```
 react-native run-ios  # or...
