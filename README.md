@@ -24,8 +24,9 @@ open http://localhost:8080 to test MongoDB and GraphQL server
 ### Run on simulator:
 
 ```
-react-native run-ios  # or...
-react-native run-android
+ios: react-native run-ios
+android: adb reverse tcp:8080 tcp:8080  # forward requests from the device to your computer
+         react-native run-android
 ```
 
 ## Developing
