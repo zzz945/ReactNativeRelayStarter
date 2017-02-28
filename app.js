@@ -12,25 +12,22 @@
 
 'use strict';
 
-import TodoApp from './components/TodoApp';
-import TodoAppRoute from './routes/TodoAppRoute';
 import React, { Component } from 'react';
-import Relay, {
-  DefaultNetworkLayer,
-  RootContainer,
-} from 'react-relay';
+import Relay from 'react-relay';
+import { StackNavigator } from 'react-navigation';
+import RelayStore from './lib/RelayStore'
+import Home from './components/Home';
+import TodoApp from './components/TodoApp'
 
-Relay.injectNetworkLayer(
-  new DefaultNetworkLayer('http://localhost:8080')
+RelayStore.injectNetworkLayer(
+  new Relay.DefaultNetworkLayer('http://localhost:8080/graphql')
 );
 
-export default class TodoMVC extends Component {
-  render() {
-    return (
-      <RootContainer
-        Component={TodoApp}
-        route={new TodoAppRoute({status: 'any'})}
-      />
-    );
-  }
-}
+const SimpleApp = StackNavigator({
+  Home: { screen: Home },
+  TodoApp: { screen: TodoApp },
+}, {
+  initialRouteName: 'Home',
+});
+
+export default SimpleApp;

@@ -24,7 +24,13 @@ import {
   View,
 } from 'react-native';
 
+import ViewerQuery from '../routes/ViewerQuery';
+import { createRenderer } from '../lib/RelayUtils';
+
 class TodoApp extends Component {
+  static navigationOptions = {
+    title: 'Todos',
+  }
   constructor(props, context) {
     super(props, context);
     this._handleStatusChange = this._handleStatusChange.bind(this);
@@ -68,7 +74,8 @@ class TodoApp extends Component {
   }
 }
 
-export default Relay.createContainer(TodoApp, {
+export default createRenderer(TodoApp, {
+  queries: ViewerQuery.queries,
   initialVariables: {
     status: 'any',
   },
