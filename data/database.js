@@ -75,7 +75,6 @@ export async function markAllTodos(complete) {
         reject('NOT found')
         return
       } else {
-        console.log(todos.length);
         todos.forEach(todo => {
           if (todo.complete !== complete) {
             todo.complete = complete;

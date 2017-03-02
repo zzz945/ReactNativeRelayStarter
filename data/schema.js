@@ -147,10 +147,12 @@ const GraphQLAddTodoMutation = mutationWithClientMutationId({
       resolve: ({localTodoId}) => {
         return new Promise((resolve, reject) => {
           getTodo(localTodoId).then(todo => {
-            resolve({
-              cursor: cursorForObjectInConnection(getTodos(), todo),
-              node: todo,
-            });
+            getTodos().then(todos => {
+              resolve({
+                cursor: cursorForObjectInConnection(todos, todo),
+                node: todo,
+              });
+            });   
           });
         });
       },
@@ -163,7 +165,7 @@ const GraphQLAddTodoMutation = mutationWithClientMutationId({
   mutateAndGetPayload: ({text}) => {
     return new Promise((resolve, reject) => {
       addTodo(text).then(todo => {
-        resolve({ id: todo.id });
+        resolve({ localTodoId: todo.id });
       });
     });
   },
