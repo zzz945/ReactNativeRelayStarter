@@ -33,6 +33,7 @@ class Todo extends Component {
   };
   state = {
     isEditing: false,
+    text: this.props.todo.text,
   };
   constructor(props, context) {
     super(props, context);
@@ -65,6 +66,7 @@ class Todo extends Component {
   }
   _handleTextInputSave(text) {
     this._setEditMode(false);
+    this.setState({text: text});
     this.props.relay.commitUpdate(
       new RenameTodoMutation({todo: this.props.todo, text})
     );
@@ -93,7 +95,7 @@ class Todo extends Component {
           <TodoTextInput
             autoFocus={true}
             commitOnBlur={true}
-            initialValue={this.props.todo.text}
+            initialValue={this.state.text}
             onCancel={this._handleTextInputCancel}
             onDelete={this._handleTextInputDelete}
             onSave={this._handleTextInputSave}
@@ -107,7 +109,7 @@ class Todo extends Component {
             <Text
               numberOfLines={1}
               style={styles.labelText}>
-              {this.props.todo.text}
+              {this.state.text}
             </Text>
           </TouchableHighlight>
         }
