@@ -25,7 +25,7 @@ import {
   connectionArgs,
   connectionDefinitions,
   connectionFromPromisedArray,
-  cursorForObjectInConnection,
+  offsetToCursor,
   fromGlobalId,
   globalIdField,
   mutationWithClientMutationId,
@@ -149,7 +149,7 @@ const GraphQLAddTodoMutation = mutationWithClientMutationId({
           getTodo(localTodoId).then(todo => {
             getTodos().then(todos => {
               resolve({
-                cursor: cursorForObjectInConnection(todos, todo),
+                cursor: offsetToCursor(todos.length - 1),
                 node: todo,
               });
             });   
