@@ -13,14 +13,15 @@
 'use strict';
 
 import React, { Component } from 'react';
-import Relay from 'react-relay';
 import { StackNavigator } from 'react-navigation';
-import RelayStore from './lib/RelayStore'
+import Relay, {
+  DefaultNetworkLayer,
+} from 'react-relay';
 import Home from './components/Home';
 import TodoApp from './components/TodoApp'
 
-RelayStore.injectNetworkLayer(
-  new Relay.DefaultNetworkLayer('http://localhost:8080/graphql')
+Relay.injectNetworkLayer(
+  new DefaultNetworkLayer('http://localhost:8080/graphql')
 );
 
 const SimpleApp = StackNavigator({

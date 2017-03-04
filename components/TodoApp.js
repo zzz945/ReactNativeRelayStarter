@@ -11,12 +11,11 @@
  */
 
 'use strict';
-
-import Relay from 'react-relay';
 import StatusButton from './StatusButton';
 import TodoList from './TodoList';
 import TodoListFooter from './TodoListFooter';
 import React, { Component } from 'react';
+import Relay, { RootContainer } from 'react-relay'; 
 import {
   Platform,
   StyleSheet,
@@ -25,7 +24,7 @@ import {
 } from 'react-native';
 
 import ViewerQuery from '../routes/ViewerQuery';
-import { createRenderer } from '../lib/RelayUtils';
+
 
 class TodoApp extends Component {
   static navigationOptions = {
@@ -74,8 +73,7 @@ class TodoApp extends Component {
   }
 }
 
-export default createRenderer(TodoApp, {
-  queries: ViewerQuery.queries,
+const TodoAppContainer = Relay.createContainer(TodoApp, {
   initialVariables: {
     status: 'any',
   },
@@ -89,6 +87,17 @@ export default createRenderer(TodoApp, {
     `,
   },
 });
+
+export default class TodoAppRelayRootContainer extends Component {
+  render() {
+    return (
+      <RootContainer
+        Component={TodoAppContainer}
+        route={new ViewerQuery({status: 'any'})}
+      />
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   actionList: {

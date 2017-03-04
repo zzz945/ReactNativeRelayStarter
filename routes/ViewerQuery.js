@@ -12,15 +12,16 @@
 
 'use strict';
 
-import Relay from 'react-relay';
+import Relay, {
+  Route,
+} from 'react-relay';
 
-const ViewQuery = {
-  paramDefinitions: {
+export default class ViewQuery extends Route {
+  static paramDefinitions = {
     status: {required: false},
-  },
-  queries: {
+  };
+  static queries = {
     viewer: () => Relay.QL`query { viewer }`,
-  },
+  };
+  static routeName = 'TodoAppRoute';
 }
-
-export default ViewQuery;
