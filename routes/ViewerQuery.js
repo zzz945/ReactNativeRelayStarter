@@ -16,7 +16,7 @@ import Relay, {
   Route,
 } from 'react-relay';
 
-export default class ViewQuery extends Route {
+export default class ViewerQuery extends Route {
   static paramDefinitions = {
     status: {required: false},
   };
