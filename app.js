@@ -24,11 +24,11 @@ Relay.injectNetworkLayer(
   new DefaultNetworkLayer('http://localhost:8080/graphql')
 );
 
-const SimpleApp = StackNavigator({
+const AppNavigator = StackNavigator({
   Home: { screen: Home },
   TodoApp: { screen: TodoApp },
 }, {
   initialRouteName: 'Home',
 });
 
-export default SimpleApp;
+export default AppNavigator;

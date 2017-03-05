@@ -15,12 +15,6 @@ mongod  # run MongoDB local
 npm start   # run GraphQL server local
 ```
 
-## Test the server:
-
-```
-open http://localhost:8080 to test MongoDB and GraphQL server
-```
-
 ### Run on simulator:
 
 ```
@@ -31,9 +25,11 @@ android: adb reverse tcp:8080 tcp:8080  # forward requests from the device to yo
 
 ### Debug:
 
-1.Select "Debug JS Remotely" from the Developer Menu.
-2.Open http://localhost:8081/debugger-ui with Chrome and you will see logs in Chrome console.
+```
+1.open http://localhost:8080 to test MongoDB and GraphQL server
+2.Select "Debug JS Remotely" from the Developer Menu and Open http://localhost:8081/debugger-ui with Chrome.
 3.Set "__dev__=true" in Chrome console to debug relay.
+```
 
 ## Developing
 

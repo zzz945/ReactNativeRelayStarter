@@ -16,7 +16,12 @@ import Relay, {
   Route,
 } from 'react-relay';
 
-export default class ViewerQuery extends Route {
+export default class TodoAppRoute extends Route {
+  constructor(relayParams, navigation) {
+    super(relayParams);
+		this.navigation = navigation;
+	}
+
   static paramDefinitions = {
     status: {required: false},
   };

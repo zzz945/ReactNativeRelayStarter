@@ -23,7 +23,7 @@ import {
   View,
 } from 'react-native';
 
-import ViewerQuery from '../routes/ViewerQuery';
+import TodoAppRoute from '../routes/TodoAppRoute';
 
 
 class TodoApp extends Component {
@@ -89,11 +89,16 @@ const TodoAppContainer = Relay.createContainer(TodoApp, {
 });
 
 export default class TodoAppRelayRootContainer extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.route = new TodoAppRoute({status: 'any'});
+    this.route.navigation = this.props.navigation;
+  }
   render() {
     return (
       <RootContainer
         Component={TodoAppContainer}
-        route={new ViewerQuery({status: 'any'})}
+        route={this.route}
       />
     );
   }

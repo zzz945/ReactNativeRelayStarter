@@ -11,13 +11,15 @@
  */
 'use strict';
 
-import React from 'react';
-import Relay from 'react-relay';
+import React, {Component} from 'react';
+import Relay, { RootContainer } from 'react-relay'; 
 import {
     Button,
 } from 'react-native';
 
-export default class MyHomeScreen extends React.Component {
+import TodoAppRoute from '../routes/TodoAppRoute';
+
+class Home extends Component {
   static navigationOptions = {
     title: 'Home',
   }
@@ -25,8 +27,36 @@ export default class MyHomeScreen extends React.Component {
   render() {
     return (
       <Button
-        onPress={() => this.props.navigation.navigate('TodoApp')}
-        title="Navigate to Todos"
+        onPress={() => this.props.relay.route.navigation.navigate('TodoApp')}
+        title={`TOTAL ${this.props.viewer.totalCount} TODOS`}
+      />
+    );
+  }
+}
+
+const HomeContainer = Relay.createContainer(Home, {
+  initialVariables: {
+    status: 'any',
+  },
+  fragments: {
+    viewer: variables => Relay.QL`
+      fragment on User {
+        totalCount
+      }
+    `,
+  },
+});
+
+export default class HomeRelayRootContainer extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.route = new TodoAppRoute({status: 'any'}, this.props.navigation);
+  }
+  render() {
+    return (
+      <RootContainer
+        Component={HomeContainer}
+        route={this.route}
       />
     );
   }
