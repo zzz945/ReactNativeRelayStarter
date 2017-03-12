@@ -1,4 +1,5 @@
 # React Native / Relay TodoMVC
+![PoC](https://cloud.githubusercontent.com/assets/21496977/23832868/69f873e4-0778-11e7-9cf2-f046c0579a10.gif)
 
 ## Installation (Make sure MongoDB is installed: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
 
