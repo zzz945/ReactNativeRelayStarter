@@ -15,20 +15,56 @@
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 import Relay, {
-  DefaultNetworkLayer,
+  DefaultNetworkLayer, Renderer
 } from 'react-relay';
 import Home from './components/Home';
 import TodoApp from './components/TodoApp'
 
-Relay.injectNetworkLayer(
-  new DefaultNetworkLayer('http://localhost:8080/graphql')
-);
+import RelaySubscriptions from 'relay-subscriptions';
+import NetworkLayer from './relay/NetworkLayer';
+import TodoAppRoute from './relay/TodoAppRoute';
+
+const envWithSubscription = new RelaySubscriptions.Environment();
+envWithSubscription.injectNetworkLayer(new NetworkLayer('http://localhost:8080/graphql'));
+
+class HomeRelayRootContainer extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.route = new TodoAppRoute({status: 'any'}, this.props.navigation);
+  }
+  render() {
+    return (
+      <Renderer
+        Container={Home}
+        queryConfig={this.route}
+        environment={envWithSubscription}
+      />
+    );
+  }
+} 
+
+class TodoAppRelayRootContainer extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.route = new TodoAppRoute({status: 'any'});
+    this.route.navigation = this.props.navigation;
+  }
+  render() {
+    return (
+      <Renderer
+        Container={TodoApp}
+        queryConfig={this.route}
+        environment={envWithSubscription}
+      />
+    );
+  }
+}
 
 const AppNavigator = StackNavigator({
-  Home: { screen: Home },
-  TodoApp: { screen: TodoApp },
+  Home: { screen: HomeRelayRootContainer },
+  TodoApp: { screen: TodoAppRelayRootContainer },
 }, {
-  initialRouteName: 'Home',
+  initialRouteName: 'TodoApp',
 });
 
 export default AppNavigator;

@@ -104,6 +104,7 @@ class TodoList extends Component {
           style={styles.todo}
           todo={todoEdge.node}
           viewer={this.props.viewer}
+          pending={this.props.relay.hasOptimisticUpdate(todoEdge)}
         />
       </Swipeout>
     );

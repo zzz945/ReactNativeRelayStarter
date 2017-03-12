@@ -15,7 +15,7 @@ import StatusButton from './StatusButton';
 import TodoList from './TodoList';
 import TodoListFooter from './TodoListFooter';
 import React, { Component } from 'react';
-import Relay, { RootContainer } from 'react-relay'; 
+import Relay from 'react-relay'; 
 import {
   Platform,
   StyleSheet,
@@ -23,8 +23,10 @@ import {
   View,
 } from 'react-native';
 
-import TodoAppRoute from '../routes/TodoAppRoute';
+import RelaySubscriptions from 'relay-subscriptions';
 
+import AddTodoSubscription from '../subscriptions/AddTodoSubscription';
+import RemoveTodoSubscription from '../subscriptions/RemoveTodoSubscription';
 
 class TodoApp extends Component {
   static navigationOptions = {
@@ -73,7 +75,7 @@ class TodoApp extends Component {
   }
 }
 
-const TodoAppContainer = Relay.createContainer(TodoApp, {
+const TodoAppContainer = RelaySubscriptions.createContainer(TodoApp, {
   initialVariables: {
     status: 'any',
   },
@@ -83,26 +85,18 @@ const TodoAppContainer = Relay.createContainer(TodoApp, {
         totalCount
         ${TodoList.getFragment('viewer', {status: variables.status})}
         ${TodoListFooter.getFragment('viewer', {status: variables.status})}
+        ${AddTodoSubscription.getFragment('viewer')}
+        ${RemoveTodoSubscription.getFragment('viewer')}
       }
     `,
   },
+  subscriptions: [
+    ({ viewer }) => new AddTodoSubscription({ viewer }),
+    ({ viewer }) => new RemoveTodoSubscription({ viewer }),
+  ],
 });
 
-export default class TodoAppRelayRootContainer extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.route = new TodoAppRoute({status: 'any'});
-    this.route.navigation = this.props.navigation;
-  }
-  render() {
-    return (
-      <RootContainer
-        Component={TodoAppContainer}
-        route={this.route}
-      />
-    );
-  }
-}
+export default TodoAppContainer;
 
 const styles = StyleSheet.create({
   actionList: {

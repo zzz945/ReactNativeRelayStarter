@@ -1,6 +1,7 @@
 schema {
   query: Root
   mutation: Mutation
+  subscription: Subscription
 }
 
 input AddTodoInput {
@@ -12,6 +13,16 @@ type AddTodoPayload {
   todoEdge: TodoEdge
   viewer: User
   clientMutationId: String!
+}
+
+input AddTodoSubscriptionInput {
+  clientSubscriptionId: String
+}
+
+type AddTodoSubscriptionPayload {
+  todoEdge: TodoEdge
+  viewer: User
+  clientSubscriptionId: String
 }
 
 input ChangeTodoStatusInput {
@@ -78,6 +89,16 @@ type RemoveTodoPayload {
   clientMutationId: String!
 }
 
+input RemoveTodoSubscriptionInput {
+  clientSubscriptionId: String
+}
+
+type RemoveTodoSubscriptionPayload {
+  deletedTodoId: ID
+  viewer: User
+  clientSubscriptionId: String
+}
+
 input RenameTodoInput {
   id: ID!
   text: String!
@@ -94,6 +115,12 @@ type Root {
   node(id: ID!): Node
 }
 
+type Subscription {
+  addTodoSubscription(input: AddTodoSubscriptionInput!): AddTodoSubscriptionPayload
+  removeTodoSubscription(input: RemoveTodoSubscriptionInput!): RemoveTodoSubscriptionPayload
+  updateTodoSubscription(input: UpdateTodoSubscriptionInput!): UpdateTodoSubscriptionPayload
+}
+
 type Todo implements Node {
   id: ID!
   text: String
@@ -108,6 +135,17 @@ type TodoConnection {
 type TodoEdge {
   node: Todo
   cursor: String!
+}
+
+input UpdateTodoSubscriptionInput {
+  id: ID!
+  clientSubscriptionId: String
+}
+
+type UpdateTodoSubscriptionPayload {
+  todo: Todo
+  viewer: User
+  clientSubscriptionId: String
 }
 
 type User implements Node {

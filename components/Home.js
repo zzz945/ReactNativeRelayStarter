@@ -12,12 +12,12 @@
 'use strict';
 
 import React, {Component} from 'react';
-import Relay, { RootContainer } from 'react-relay'; 
+import Relay from 'react-relay'; 
 import {
     Button,
 } from 'react-native';
 
-import TodoAppRoute from '../routes/TodoAppRoute';
+import RelaySubscriptions from 'relay-subscriptions';
 
 class Home extends Component {
   static navigationOptions = {
@@ -34,7 +34,7 @@ class Home extends Component {
   }
 }
 
-const HomeContainer = Relay.createContainer(Home, {
+const HomeContainer = RelaySubscriptions.createContainer(Home, {
   initialVariables: {
     status: 'any',
   },
@@ -47,17 +47,4 @@ const HomeContainer = Relay.createContainer(Home, {
   },
 });
 
-export default class HomeRelayRootContainer extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.route = new TodoAppRoute({status: 'any'}, this.props.navigation);
-  }
-  render() {
-    return (
-      <RootContainer
-        Component={HomeContainer}
-        route={this.route}
-      />
-    );
-  }
-}
+export default HomeContainer;

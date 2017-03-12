@@ -26,6 +26,9 @@ import {
   View,
 } from 'react-native';
 
+import RelaySubscriptions from 'relay-subscriptions';
+import UpdateTodoSubscription from '../subscriptions/UpdateTodoSubscription';
+
 class Todo extends Component {
   static propTypes = {
     onDestroy: PropTypes.func.isRequired,
@@ -33,7 +36,6 @@ class Todo extends Component {
   };
   state = {
     isEditing: false,
-    text: this.props.todo.text,
   };
   constructor(props, context) {
     super(props, context);
@@ -44,6 +46,7 @@ class Todo extends Component {
     this._handleTextInputSave = this._handleTextInputSave.bind(this);
     this._setEditMode = this._setEditMode.bind(this);
   }
+  
   _handleCompletePress() {
     const complete = !this.props.todo.complete;
     this.props.relay.commitUpdate(
@@ -66,7 +69,7 @@ class Todo extends Component {
   }
   _handleTextInputSave(text) {
     this._setEditMode(false);
-    this.setState({text: text});
+    //this.setState({text: text});
     this.props.relay.commitUpdate(
       new RenameTodoMutation({todo: this.props.todo, text})
     );
@@ -95,7 +98,7 @@ class Todo extends Component {
           <TodoTextInput
             autoFocus={true}
             commitOnBlur={true}
-            initialValue={this.state.text}
+            initialValue={this.props.todo.text}
             onCancel={this._handleTextInputCancel}
             onDelete={this._handleTextInputDelete}
             onSave={this._handleTextInputSave}
@@ -109,7 +112,7 @@ class Todo extends Component {
             <Text
               numberOfLines={1}
               style={styles.labelText}>
-              {this.state.text}
+              {this.props.todo.text}
             </Text>
           </TouchableHighlight>
         }
@@ -118,7 +121,7 @@ class Todo extends Component {
   }
 }
 
-export default Relay.createContainer(Todo, {
+export default RelaySubscriptions.createContainer(Todo, {
   fragments: {
     todo: () => Relay.QL`
       fragment on Todo {
@@ -127,6 +130,7 @@ export default Relay.createContainer(Todo, {
         text
         ${ChangeTodoStatusMutation.getFragment('todo')}
         ${RenameTodoMutation.getFragment('todo')}
+        ${UpdateTodoSubscription.getFragment('todo')}
       }
     `,
     viewer: () => Relay.QL`
@@ -135,6 +139,9 @@ export default Relay.createContainer(Todo, {
       }
     `,
   },
+  subscriptions: [
+    ({ pending, todo }) => !pending && new UpdateTodoSubscription({ todo }),
+  ],
 });
 
 const styles = StyleSheet.create({

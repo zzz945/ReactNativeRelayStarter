@@ -26,17 +26,58 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
 
 const TodoModel = mongoose.model('TodoModel', { text: String, complete: Boolean });
-addTodo('hello', false);
+//addTodo('hello', false);
+
+const notifiers = [];
+
+export function notifyChange(topic, data) {
+  // Delay the change notification to avoid the subscription update hitting the
+  // client before the mutation response.
+  setTimeout(() => {
+    notifiers.forEach(notifier => notifier({ topic, data }));
+  }, 100);
+}
+
+export function addNotifier(cb) {
+  notifiers.push(cb);
+
+  return () => {
+    const index = notifiers.indexOf(cb);
+    if (index !== -1) {
+      notifiers.splice(index, 1);
+    }
+  };
+}
 
 export function addTodo(text, complete) {
   console.log('addTodo');
   let todo = new TodoModel({ text: text, complete: !!complete });
-  return todo.save();
+  return new Promise((resolve, reject) => {
+    todo.save().then(todo => {
+      notifyChange('add_todo', todo.toObject({ getters: true }));//The todo passed to notifyChange function will be used by 'graphql-relay-subscription', it is required to be plain object.
+      resolve(todo);
+    });
+  });
 }
 
 export function changeTodoStatus(id, complete) {
   console.log('changeTodoStatus');
-  return TodoModel.findOneAndUpdate({_id: id}, {$set: {complete: !!complete}}).exec();
+  return new Promise((resolve, reject) => {
+    TodoModel.findOneAndUpdate({_id: id}, {$set: {complete: !!complete}}, {new: true}).then(todo => {
+      notifyChange(`update_todo_${id}`, todo.toObject({ getters: true }));
+      resolve(todo);
+    });
+  });
+}
+
+export function renameTodo(id, text) {
+  console.log('renameTodo');
+  return new Promise((resolve, reject) => {
+    TodoModel.findOneAndUpdate({_id: id}, {$set: {text: text}}, {new: true}).then(todo => {
+      notifyChange(`update_todo_${id}`, todo.toObject({ getters: true }));
+      resolve(todo);
+    });
+  });
 }
 
 export function getTodo(id) {
@@ -62,7 +103,7 @@ export function getViewer() {
   return getUser(VIEWER_ID);
 }
 
-export async function markAllTodos(complete) {
+export function markAllTodos(complete) {
   console.log('markAllTodos');
   return new Promise((resolve, reject) => {
     TodoModel.find({}, (err, todos) => {
@@ -90,6 +131,7 @@ export async function markAllTodos(complete) {
 export function removeTodo(id) {
   console.log('removeTodo');
   TodoModel.findByIdAndRemove(id).exec();
+  notifyChange('delete_todo', { id });
 }
 
 export function removeCompletedTodos() {
@@ -108,9 +150,4 @@ export function removeCompletedTodos() {
       resolve(todos.map(todo => todo.id));
     });
   });
-}
-
-export function renameTodo(id, text) {
-  console.log('renameTodo');
-  TodoModel.findOneAndUpdate({_id: id}, {$set: {text: text}}).exec();
 }

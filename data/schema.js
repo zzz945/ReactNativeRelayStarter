@@ -33,6 +33,8 @@ import {
   toGlobalId,
 } from 'graphql-relay';
 
+import { subscriptionWithClientId } from 'graphql-relay-subscription';
+
 import {
   addTodo,
   changeTodoStatus,
@@ -144,16 +146,14 @@ const GraphQLAddTodoMutation = mutationWithClientMutationId({
   outputFields: {
     todoEdge: {
       type: GraphQLTodoEdge,
-      resolve: ({localTodoId}) => {
+      resolve: (todo) => {
         return new Promise((resolve, reject) => {
-          getTodo(localTodoId).then(todo => {
-            getTodos().then(todos => {
-              resolve({
-                cursor: offsetToCursor(todos.length - 1),
-                node: todo,
-              });
-            });   
-          });
+          getTodos().then(todos => {
+            resolve({
+              cursor: offsetToCursor(todos.length - 1),
+              node: todo,
+            });
+          });   
         });
       },
     },
@@ -162,13 +162,7 @@ const GraphQLAddTodoMutation = mutationWithClientMutationId({
       resolve: () => getViewer(),
     },
   },
-  mutateAndGetPayload: ({text}) => {
-    return new Promise((resolve, reject) => {
-      addTodo(text).then(todo => {
-        resolve({ localTodoId: todo.id });
-      });
-    });
-  },
+  mutateAndGetPayload: ({text}) => addTodo(text),
 });
 
 const GraphQLChangeTodoStatusMutation = mutationWithClientMutationId({
@@ -180,7 +174,7 @@ const GraphQLChangeTodoStatusMutation = mutationWithClientMutationId({
   outputFields: {
     todo: {
       type: GraphQLTodo,
-      resolve: (localTodoId) => getTodo(localTodoId),
+      resolve: todo => todo,
     },
     viewer: {
       type: GraphQLUser,
@@ -244,7 +238,7 @@ const GraphQLRemoveTodoMutation = mutationWithClientMutationId({
   outputFields: {
     deletedTodoId: {
       type: GraphQLID,
-      resolve: ({id}) => id,
+      resolve: id => id,
     },
     viewer: {
       type: GraphQLUser,
@@ -254,7 +248,7 @@ const GraphQLRemoveTodoMutation = mutationWithClientMutationId({
   mutateAndGetPayload: ({id}) => {
     const localTodoId = fromGlobalId(id).id;
     removeTodo(localTodoId);
-    return {id};
+    return id;
   },
 });
 
@@ -267,13 +261,76 @@ const GraphQLRenameTodoMutation = mutationWithClientMutationId({
   outputFields: {
     todo: {
       type: GraphQLTodo,
-      resolve: ({localTodoId}) => getTodo(localTodoId),
+      resolve: todo => todo,
     },
   },
   mutateAndGetPayload: ({id, text}) => {
     const localTodoId = fromGlobalId(id).id;
-    renameTodo(localTodoId, text);
-    return {localTodoId};
+    return renameTodo(localTodoId, text);
+  },
+});
+
+const GraphQLAddTodoSubscription = subscriptionWithClientId({
+  name: 'AddTodoSubscription',
+  outputFields: {
+    todoEdge: {
+      type: GraphQLTodoEdge,
+      resolve: obj => {
+        return new Promise((resolve, reject) => {
+          getTodos().then(todos => {
+            resolve({
+              cursor: offsetToCursor(todos.length - 1),
+              node: obj,
+            });
+          });
+        });
+      },
+    },
+    viewer: {
+      type: GraphQLUser,
+      resolve: () => getViewer(),
+    },
+  },
+  subscribe: (input, context) => {
+    context.subscribe('add_todo');
+  },
+});
+
+
+const GraphQLRemoveTodoSubscription = subscriptionWithClientId({
+  name: 'RemoveTodoSubscription',
+  outputFields: {
+    deletedTodoId: {
+      type: GraphQLID,
+      resolve: ({ id }) => toGlobalId('Todo', id),
+    },
+    viewer: {
+      type: GraphQLUser,
+      resolve: () => getViewer(),
+    },
+  },
+  subscribe: (input, context) => {
+    context.subscribe('delete_todo');
+  },
+});
+
+const GraphQLUpdateTodoSubscription = subscriptionWithClientId({
+  name: 'UpdateTodoSubscription',
+  inputFields: {
+    id: { type: new GraphQLNonNull(GraphQLID) },
+  },
+  outputFields: {
+    todo: {
+      type: GraphQLTodo,
+      resolve: obj => obj,
+    },
+    viewer: {
+      type: GraphQLUser,
+      resolve: () => getViewer(),
+    },
+  },
+  subscribe: ({ id }, context) => {
+    context.subscribe(`update_todo_${fromGlobalId(id).id}`);
   },
 });
 
@@ -289,7 +346,17 @@ const Mutation = new GraphQLObjectType({
   },
 });
 
+const Subscription = new GraphQLObjectType({
+  name: 'Subscription',
+  fields: {
+    addTodoSubscription: GraphQLAddTodoSubscription,
+    removeTodoSubscription: GraphQLRemoveTodoSubscription,
+    updateTodoSubscription: GraphQLUpdateTodoSubscription,
+  },
+});
+
 export const schema = new GraphQLSchema({
   query: Root,
   mutation: Mutation,
+  subscription: Subscription,
 });
