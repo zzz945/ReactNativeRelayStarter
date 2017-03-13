@@ -64,7 +64,7 @@ const AppNavigator = StackNavigator({
   Home: { screen: HomeRelayRootContainer },
   TodoApp: { screen: TodoAppRelayRootContainer },
 }, {
-  initialRouteName: 'TodoApp',
+  initialRouteName: 'Home',
 });
 
 export default AppNavigator;

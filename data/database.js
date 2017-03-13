@@ -130,8 +130,9 @@ export function markAllTodos(complete) {
 
 export function removeTodo(id) {
   console.log('removeTodo');
-  TodoModel.findByIdAndRemove(id).exec();
-  notifyChange('delete_todo', { id });
+  TodoModel.findByIdAndRemove(id).then(_ => {
+    notifyChange('delete_todo', { id });
+  });  
 }
 
 export function removeCompletedTodos() {

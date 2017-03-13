@@ -238,7 +238,7 @@ const GraphQLRemoveTodoMutation = mutationWithClientMutationId({
   outputFields: {
     deletedTodoId: {
       type: GraphQLID,
-      resolve: id => id,
+      resolve: ({id}) => id,
     },
     viewer: {
       type: GraphQLUser,
@@ -248,7 +248,7 @@ const GraphQLRemoveTodoMutation = mutationWithClientMutationId({
   mutateAndGetPayload: ({id}) => {
     const localTodoId = fromGlobalId(id).id;
     removeTodo(localTodoId);
-    return id;
+    return {id};
   },
 });
 
