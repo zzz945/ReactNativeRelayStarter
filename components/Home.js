@@ -13,11 +13,10 @@
 
 import React, {Component} from 'react';
 import Relay from 'react-relay'; 
-import {
-    Button,
-} from 'react-native';
 
 import RelaySubscriptions from 'relay-subscriptions';
+
+import { Container, Content, Button, Text } from 'native-base';
 
 class Home extends Component {
   static navigationOptions = {
@@ -26,10 +25,13 @@ class Home extends Component {
 
   render() {
     return (
-      <Button
-        onPress={() => this.props.relay.route.navigation.navigate('TodoApp')}
-        title={`TOTAL ${this.props.viewer.totalCount} TODOS`}
-      />
+      <Container>
+        <Content>
+          <Button block onPress={() => this.props.relay.route.navigation.navigate('TodoApp')}>
+            <Text> {`TOTAL ${this.props.viewer.totalCount} TODOS`} </Text>
+          </Button>
+        </Content>
+      </Container>
     );
   }
 }

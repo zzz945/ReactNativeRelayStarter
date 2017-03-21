@@ -18,15 +18,16 @@ import React, { Component } from 'react';
 import Relay from 'react-relay'; 
 import {
   Platform,
-  StyleSheet,
-  Text,
-  View,
+  View, 
+  Text, 
 } from 'react-native';
 
 import RelaySubscriptions from 'relay-subscriptions';
 
 import AddTodoSubscription from '../subscriptions/AddTodoSubscription';
 import RemoveTodoSubscription from '../subscriptions/RemoveTodoSubscription';
+
+import { Container } from 'native-base';
 
 class TodoApp extends Component {
   static navigationOptions = {
@@ -41,7 +42,7 @@ class TodoApp extends Component {
   }
   render() {
     return (
-      <View style={styles.container}>
+      <Container style={styles.container}>
         <Text style={styles.header}>todos</Text>
         <View style={styles.actionList}>
           <StatusButton
@@ -70,7 +71,7 @@ class TodoApp extends Component {
           style={styles.footer}
           viewer={this.props.viewer}
         />
-      </View>
+      </Container>
     );
   }
 }
@@ -98,21 +99,9 @@ const TodoAppContainer = RelaySubscriptions.createContainer(TodoApp, {
 
 export default TodoAppContainer;
 
-const styles = StyleSheet.create({
-  actionList: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
+const styles = {
   container: {
     backgroundColor: '#F5F5F5',
-    flex: 1,
-    paddingTop: Platform.OS === 'android' ? undefined : 20,
-  },
-  footer: {
-    height: 10,
-    paddingHorizontal: 15,
   },
   header: {
     alignSelf: 'center',
@@ -120,6 +109,15 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'android' ? 'sans-serif-light' : undefined,
     fontSize: 100,
     fontWeight: '100',
+  },
+  actionList: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 15,
+  },
+  footer: {
+    paddingHorizontal: 15,
   },
   list: {
     borderTopColor: 'rgba(0,0,0,0.1)',
@@ -132,4 +130,4 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 1,
   },
-});
+};

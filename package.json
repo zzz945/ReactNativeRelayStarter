@@ -16,6 +16,7 @@
     "graphql-relay": "0.4.2",
     "graphql-relay-subscription": "^0.1.2",
     "mongoose": "^4.8.3",
+    "native-base": "^2.0.13",
     "react": "^15.4.2",
     "react-native": "^0.38.0",
     "react-native-listitem": "1.0.5",

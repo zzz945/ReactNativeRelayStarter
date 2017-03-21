@@ -24,6 +24,10 @@ import RelaySubscriptions from 'relay-subscriptions';
 import NetworkLayer from './relay/NetworkLayer';
 import TodoAppRoute from './relay/TodoAppRoute';
 
+import { StyleProvider } from 'native-base';
+import getTheme from './native-base-theme/components';
+import material from './native-base-theme/variables/material';
+
 const envWithSubscription = new RelaySubscriptions.Environment();
 envWithSubscription.injectNetworkLayer(new NetworkLayer('http://localhost:8080/graphql'));
 
@@ -67,4 +71,14 @@ const AppNavigator = StackNavigator({
   initialRouteName: 'Home',
 });
 
-export default AppNavigator;
+      
+
+export default class TodoMVC extends Component {
+  render() {
+    return (
+      <StyleProvider style={getTheme(material)}>
+        <AppNavigator />
+      </StyleProvider>
+    );
+  }
+};
